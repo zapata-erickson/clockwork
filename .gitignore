@@ -313,3 +313,8 @@ OpenCover/
 
 # Azure Stream Analytics local run output 
 ASALocalRun/
+/.DS_Store
+/packages
+/backup
+bin
+obj
