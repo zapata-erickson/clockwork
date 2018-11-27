@@ -318,3 +318,4 @@ ASALocalRun/
 /backup
 bin
 obj
+/Clockwork.API/.DS_Store
