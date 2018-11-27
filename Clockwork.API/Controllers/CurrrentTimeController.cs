@@ -4,11 +4,11 @@ using Clockwork.API.Models;
 
 namespace Clockwork.API.Controllers
 {
-    [Route("api/[controller]")]
-    public class CurrentTimeController : Controller
+    [Route("api/currenttime")]
+    public class CurrentTimeController : ControllerBase
     {
         // GET api/currenttime
-        [HttpGet]
+        [HttpGet,Route("")]
         public IActionResult Get()
         {
             var utcTime = DateTime.UtcNow;
