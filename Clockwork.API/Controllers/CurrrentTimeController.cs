@@ -1,41 +1,60 @@
 ﻿using System;
+using Clockwork.API.Core;
+using Clockwork.API.Core.Repository;
 using Microsoft.AspNetCore.Mvc;
-using Clockwork.API.Models;
+
 
 namespace Clockwork.API.Controllers
 {
     [Route("api/currenttime")]
     public class CurrentTimeController : ControllerBase
     {
+        private readonly ICurrentTimeQueryService service;
+
+        public CurrentTimeController(ICurrentTimeQueryService service)
+        {
+            this.service = service;
+        }
+        
         // GET api/currenttime
         [HttpGet,Route("")]
         public IActionResult Get()
         {
-            var utcTime = DateTime.UtcNow;
-            var serverTime = DateTime.Now;
-            var ip = this.HttpContext.Connection.RemoteIpAddress.ToString();
-
-            var returnVal = new CurrentTimeQuery
+            try
             {
-                UTCTime = utcTime,
-                ClientIp = ip,
-                Time = serverTime
-            };
+                var utcTime = DateTime.UtcNow;
+                var serverTime = DateTime.Now;
+                var ip = this.HttpContext.Connection.RemoteIpAddress.ToString();
 
-            using (var db = new ClockworkContext())
-            {
-                db.CurrentTimeQueries.Add(returnVal);
-                var count = db.SaveChanges();
-                Console.WriteLine("{0} records saved to database", count);
-
-                Console.WriteLine();
-                foreach (var CurrentTimeQuery in db.CurrentTimeQueries)
+                var newQuery = new CurrentTimeQuery
                 {
-                    Console.WriteLine(" - {0}", CurrentTimeQuery.UTCTime);
-                }
-            }
+                    UTCTime = utcTime,
+                    ClientIp = ip,
+                    Time = serverTime
+                };
 
-            return Ok(returnVal);
+                this.service.Log(newQuery);
+
+                return Ok(newQuery);
+            }
+            catch 
+            {
+                throw;
+            }
+        }
+
+        [HttpGet,Route("list")]
+        public IActionResult GetAll()
+        {
+            try
+            {
+                var list = this.service.GetAllQueries();
+                return Ok(list);
+            }
+            catch
+            {
+                throw;
+            }
         }
     }
 }

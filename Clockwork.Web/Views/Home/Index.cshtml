@@ -1,31 +1,52 @@
 ﻿<div class="panel-body" ng-controller="HomeController" ng-animate="slide"s>
     <div class="row">
         <div class="container container-fluid">
-            <table class="table table-bordered table-responsive" ng-model="currentLog" style="width:30%">
-                <thead>
+            <h3>AWH Clockwork Project @ViewData["Version"] on @ViewData["Runtime"]!</h3>
+            <hr />
+            <button class="btn btn-success" type="button" ng-click="queryAndLogTime()">Get and Log the time</button>
+        </div>
+        <div class="container container-fluid">
+            <br/>
+            <table class="table table-bordered table-responsive table-hover table-striped" style="width: 100%">
+                <thead class="table-header">
                     <tr>
-                        <th colspan="2">
-                            <h3>Logger</h3>
-                        </th>
+                        <th>Id</th>
+                        <th>Date</th>
+                        <th>Time</th>
+                        <th>IP</th>
+                        <th>Utc</th>
+                        <th>Time Zone</th>
                     </tr>
                 </thead>
                 <tbody>
-                    <tr>
-                        <td style="width:50%">Current Date:</td>
-                        <td style="width:50%">{{model.time | date }}</td>
+                    <tr ng-hide="queries.length!=0">
+                        <td colspan="6">
+                            <p class="text-info">Nothing to show yet..</p>
+                        </td>
                     </tr>
-                    <tr>
-                        <td style="width:50%">Current Time:</td>
-                        <td style="width:50%">{{model.time | date : "hh:mm:ss"  }}</td>
-                    </tr>
-                    <tr>
-                        <td style="width:50%">Current IP Address:</td>
-                        <td style="width:50%">{{model.clientIp}}</td>
+                    <tr ng-repeat="query in queries | orderBy: '-currentTimeQueryId' ">
+                        <td>
+                            {{ query.currentTimeQueryId}}
+                        </td>
+                        <td>
+                            {{ query.time | date}}
+                        </td>
+                        <td>
+                            {{ query.time | date : 'hh:mm:ss'}}
+                        </td>
+                        <td>
+                            {{ query.clientIp}}
+                        </td>
+                        <td>
+                            {{ query.utcTime | date }}
+                        </td>
+                        <td>
+                            {{ query.utcTime | date :'Z'}}
+                        </td>
                     </tr>
                 </tbody>
             </table>
-            <button class="btn btn-primary" type="button" ng-click="userAction()">Get the time</button>
-        </div>
+        </div>        
     </div>
 </div>
 

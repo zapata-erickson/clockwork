@@ -1,42 +1,91 @@
 ﻿(function () {
-    const myApp = angular.module('ClockworkApp', ['ngAnimate']);
+    const myApp = angular.module('ClockworkApp', ['ngAnimate','angularjsToast']);
     var app = myApp;
 
-    app.controller("HomeController", ['$scope', 'clockworkServiceFactory', function ($scope, clockworkServiceFactory) {
-
-        $scope.currentLog = {
+    app.controller("HomeController", ['$scope', 'toastServiceFactory', 'clockworkServiceFactory', function ($scope, toastServiceFactory, clockworkServiceFactory) {
+        $scope.currentQuery = {
             currentTimeQueryId: null,
             time: null,
             clientIp: null,
             utcTime: null
         };
 
-        $scope.logList = [];
-
-        $scope.userAction = function () {
+        $scope.queries = [];
+              
+        $scope.queryAndLogTime = function () {
             var service = clockworkServiceFactory.createClockworkService();
+            var notificationService = toastServiceFactory.createToasterService();
 
             service
-                .getCurrentTime()
+                .queryCurrentTime()
                 .then(function (result) {
-                    $scope.model = result.data;
+                    $scope.currentQuery = result.data;
+                    notificationService.notifySuccess('Success! Logged Current time:&nbsp;' + $scope.currentQuery.time + '&nbsp;and&nbsp;Current IP:&nbsp;' + $scope.currentQuery.clientIp);
                 })
                 .catch(function (error) {
+                    notificationService.notifyError(error);
                     console.log(error);
                 })
         }
+
+        $scope.getEntries = function () {
+            var service = clockworkServiceFactory.createClockworkService();
+
+            service
+                .queryAllEntries()
+                .then(function (result) {
+                    $scope.queries = result.data;
+                    $scope.getEntries();
+                })
+                .catch(function (error) {
+                    notificationService.notifyError(error);
+                    console.log(error);
+                });
+        }
+
+        $scope.getEntries();
+
     }]);
 
-    app.factory("clockworkServiceFactory", ['$http', function ($http) {
+    app.factory('clockworkServiceFactory', ['$http', function ($http) {
         var factory = {};
+
         factory.createClockworkService = function () {
             var service = {
-                getCurrentTime: function () {
-                    return $http.get("http://localhost:5000/api/currenttime");
+                queryCurrentTime: function () {
+                    return $http.get('http://localhost:5000/api/currenttime');
+                },
+                queryAllEntries: function () {
+                    return $http.get('http://localhost:5000/api/currenttime/list');
                 }
             }
             return service;
         };
+        return factory;
+    }]);
+
+    app.factory('toastServiceFactory', ['toast', function (toast) {
+        var factory = {};
+
+        factory.createToasterService = function () {
+            var service = {
+                notifySuccess: function (message) {
+                    toast({
+                        duration: 10000,
+                        message: message,
+                        className: 'alert-success'
+                    });               
+                },
+                notifyError: function (message) {
+                    toast({
+                        duration: 10000,
+                        message: message,
+                        className: 'alert-danger'
+                    });
+                }
+            }
+            return service;
+        }
         return factory;
     }]);
 

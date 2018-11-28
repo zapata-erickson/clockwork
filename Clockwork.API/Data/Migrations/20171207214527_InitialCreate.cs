@@ -2,7 +2,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace Clockwork.API.Migrations
+namespace Clockwork.API.Data.Migrations
 {
     public partial class InitialCreate : Migration
     {
