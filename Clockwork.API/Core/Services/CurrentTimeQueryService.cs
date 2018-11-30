@@ -35,7 +35,6 @@ namespace Clockwork.API.Core.Services
         {
             using (var uow = uowFactory.CreateNew())
             {
-                var count = uow.Queries.Find(entry => true).Count();
                 var newEntry = new CurrentTimeQuery
                 {
                     CurrentTimeQueryId = item.CurrentTimeQueryId,
