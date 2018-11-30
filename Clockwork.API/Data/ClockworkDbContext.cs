@@ -7,13 +7,19 @@ namespace Clockwork.API.Data
 {
     public class ClockworkDbContext : DbContext, ICurrentTimeQueryUnitOfWork
     {
+        private ICurrentTimeQueryRepository currentTimeQueryRepository;
+
         public DbSet<CurrentTimeQuery> CurrentTimeQueries { get; set; }
 
         ICurrentTimeQueryRepository ICurrentTimeQueryUnitOfWork.Queries
         {
             get
             {
-                return new CurrentTimeQueryRepository(this);
+                if(currentTimeQueryRepository==null)
+                {
+                    this.currentTimeQueryRepository = new CurrentTimeQueryRepository(this);
+                }
+                return this.currentTimeQueryRepository;
             }
         }
 
